@@ -13,13 +13,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'github-creds',
-                    url: 'https://github.com/Stone-15/jenkins-nodejs.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
