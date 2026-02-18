@@ -1,10 +1,10 @@
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node-app
 spec:
   replicas: 2
-  selector: 
+  selector:
     matchLabels:
       app: node-app
   template:
@@ -16,4 +16,4 @@ spec:
       - name: node-app
         image: joshdoc/node-app:latest
         ports:
-        -containerPort: 3000
+        - containerPort: 3000
