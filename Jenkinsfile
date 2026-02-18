@@ -15,12 +15,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
+                echo "Building Docker image $DOCKER_IMAGE:$DOCKER_TAG"
                 sh "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
             }
         }
 
         stage('Login Docker') {
             steps {
+                echo "Logging into Docker registry"
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-creds',
                     usernameVariable: 'USER',
@@ -33,12 +35,14 @@ pipeline {
 
         stage('Push Image') {
             steps {
+                echo "Pushing Docker image $DOCKER_IMAGE:$DOCKER_TAG"
                 sh "docker push $DOCKER_IMAGE:$DOCKER_TAG"
             }
         }
 
-        stage('Debug Kubeconfig') {
+        stage('Debug Kubeconfig (Temporary)') {
             steps {
+                echo "Verifying flattened kubeconfig for Jenkins"
                 withCredentials([file(
                     credentialsId: 'kubeconfig',
                     variable: 'KUBECONFIG'
@@ -52,8 +56,9 @@ pipeline {
             }
         }
 
-        stage('Deploy to K8s') {
+        stage('Deploy to Kubernetes') {
             steps {
+                echo "Deploying to Kubernetes cluster"
                 withCredentials([file(
                     credentialsId: 'kubeconfig',
                     variable: 'KUBECONFIG'
@@ -62,6 +67,18 @@ pipeline {
                     sh 'kubectl apply -f k8s/service.yaml'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished"
+        }
+        success {
+            echo "Deployment successful!"
+        }
+        failure {
+            echo "Pipeline failed. Check logs for details."
         }
     }
 }
