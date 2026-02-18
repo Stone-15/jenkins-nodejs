@@ -37,6 +37,21 @@ pipeline {
             }
         }
 
+        stage('Debug Kubeconfig') {
+            steps {
+                withCredentials([file(
+                    credentialsId: 'kubeconfig',
+                    variable: 'KUBECONFIG'
+                )]) {
+                    sh '''
+                        echo "KUBECONFIG path: $KUBECONFIG"
+                        echo "---- Checking for ubuntu paths ----"
+                        grep ubuntu $KUBECONFIG || echo "No ubuntu paths found"
+                    '''
+                }
+            }
+        }
+
         stage('Deploy to K8s') {
             steps {
                 withCredentials([file(
