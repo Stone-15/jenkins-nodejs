@@ -15,5 +15,6 @@ spec:
       containers:
       - name: node-app
         image: joshdoc/node-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
